@@ -26,9 +26,7 @@ RCT_CUSTOM_VIEW_PROPERTY(buttonType, NSString, ApplePayButtonView)
 RCT_CUSTOM_VIEW_PROPERTY(cornerRadius, CGFloat, ApplePayButtonView)
 {
   if (json) {
-    CGFloat valueAsFloat = [json floatValue];
-    CGFloat *pointerToFloat = &valueAsFloat;
-    [view setCornerRadius:pointerToFloat];
+    [view setCornerRadius:[RCTConvert CGFloat:json]];
   }
 }
 

@@ -10,6 +10,7 @@
 
 NSString * const DEFAULT_BUTTON_TYPE = @"plain";
 NSString * const DEFAULT_BUTTON_STYLE = @"black";
+CGFloat const DEFAULT_CORNER_RADIUS = 4.0;
 
 @implementation ApplePayButtonView
 
@@ -21,16 +22,14 @@ NSString * const DEFAULT_BUTTON_STYLE = @"black";
 - (instancetype) init {
   self = [super init];
   
-  CGFloat valueAsFloat = 4;
-  CGFloat *pointerToFloat = &valueAsFloat;
-  [self setButtonType:DEFAULT_BUTTON_TYPE andStyle:DEFAULT_BUTTON_STYLE andRadius:(CGFloat *)pointerToFloat];
+  [self setButtonType:DEFAULT_BUTTON_TYPE andStyle:DEFAULT_BUTTON_STYLE withRadius:DEFAULT_CORNER_RADIUS];
   
   return self;
 }
 
 - (void)setButtonType:(NSString *) value {
   if (_buttonType != value) {
-    [self setButtonType:value andStyle:_buttonStyle andRadius:_cornerRadius];
+    [self setButtonType:value andStyle:_buttonStyle withRadius:_cornerRadius];
   }
   
   _buttonType = value;
@@ -38,21 +37,21 @@ NSString * const DEFAULT_BUTTON_STYLE = @"black";
 
 - (void)setButtonStyle:(NSString *) value {
   if (_buttonStyle != value) {
-    [self setButtonType:_buttonType andStyle:value andRadius:_cornerRadius];
+    [self setButtonType:_buttonType andStyle:value withRadius:_cornerRadius];
   }
   
   _buttonStyle = value;
 }
 
-- (void)setCornerRadius: (CGFloat *) value {
+- (void)setCornerRadius: (CGFloat) value {
     if (_cornerRadius != value) {
-      [self setButtonType:_buttonType andStyle:_buttonStyle andRadius:value];
+      [self setButtonType:_buttonType andStyle:_buttonStyle withRadius:value];
     }
     
     _cornerRadius = value;
 }
 
-- (void)setButtonType:(NSString *) buttonType andStyle:(NSString *) buttonStyle andRadius:(CGFloat *) cornerRadius {
+- (void)setButtonType:(NSString *) buttonType andStyle:(NSString *) buttonStyle withRadius:(CGFloat) cornerRadius {
   for (UIView *view in self.subviews) {
     [view removeFromSuperview];
   }
@@ -88,11 +87,10 @@ NSString * const DEFAULT_BUTTON_STYLE = @"black";
 
   _button = [[PKPaymentButton alloc] initWithPaymentButtonType:type paymentButtonStyle:style];
   [_button addTarget:self action:@selector(touchUpInside:) forControlEvents:UIControlEventTouchUpInside];
+  
   if (@available(iOS 12.0, *)) {
-    if (cornerRadius != NULL) {
-      CGFloat cornerRadiusAsFloat = *cornerRadius;
-      [_button setCornerRadius:cornerRadiusAsFloat];
-    }
+    _button.layer.cornerRadius = cornerRadius;
+    _button.layer.masksToBounds = true;
   } else {
     // Fallback on earlier versions
   }
